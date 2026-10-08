@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Header from "./components/Header";
-import ProcessBar from "./components/ProcessBar";
 import Sidebar from "./components/Sidebar";
 import ArticleWriter from "./components/ArticleWriter";
 import SourceSearch from "./components/SourceSearch";
@@ -81,7 +80,7 @@ export default function App() {
       <Header currentArticleTitle={article.title} status={article.status} />
 
       {/* 2. Main Workspace Layout: Floating Slim Sidebar & Warm Minimal Workspace */}
-      <div className="flex flex-1 w-full relative overflow-x-hidden min-h-[calc(100vh-70px)] px-3 md:px-6 py-2 gap-4 md:gap-5">
+      <div className="flex flex-1 w-full relative min-h-[calc(100vh-70px)] px-3 md:px-6 py-2 gap-4 md:gap-5">
         {/* Left Sidebar attached to edge */}
         <Sidebar
           isCollapsed={isSidebarCollapsed}
@@ -90,59 +89,28 @@ export default function App() {
           setActiveTab={setActiveTab}
         />
 
-        {/* Main Content Wrapper with Top Binder Navigation */}
-        <div className="flex-1 flex flex-col min-w-0 transition-all z-20">
-          {/* Top Process Binder Navigation - 녹음 파일(interview) 화면에서는 숨김 */}
-          {activeTab !== "interview" && (
-            <ProcessBar 
-              activeTab={activeTab}
-              setActiveTab={(tab) => {
-                if (tab === "factcheck") {
-                  handleRunFactCheck();
-                } else {
-                  setActiveTab(tab);
-                }
-              }}
-            />
-          )}
-
-          {/* Main Content Solid Box */}
-          <main className="main-warm-container flex-1 py-7 px-5 md:px-10 min-w-0 transition-all">
-            {activeTab === "writer" && (
-              <ArticleWriter
-                article={article}
-                setArticle={setArticle}
-                onOpenSearch={() => setShowSearchModal(true)}
-                onRunFactCheck={handleRunFactCheck}
-                factCheckActive={factCheckActive}
-                factCheckIssues={factCheckIssues}
-                activeFactIndex={activeFactIndex}
-                onApplyFactFix={handleApplyFactFix}
-                onSkipFactFix={handleSkipFactFix}
-              />
-            )}
-
+        {/* Main Content Workspace */}
+        <div className="flex-1 flex flex-col min-w-0 transition-all z-20 relative mr-0 lg:mr-[185px]">
+          {activeTab === "writer" || activeTab === "publish" ? (
+          <ArticleWriter
+            article={article}
+            setArticle={setArticle}
+            onOpenSearch={() => setShowSearchModal(true)}
+            onRunFactCheck={handleRunFactCheck}
+            factCheckActive={factCheckActive}
+            factCheckIssues={factCheckIssues}
+            activeFactIndex={activeFactIndex}
+            onApplyFactFix={handleApplyFactFix}
+            onSkipFactFix={handleSkipFactFix}
+          />
+        ) : (
+          <main className="main-warm-container flex-1 py-7 px-5 md:px-10 min-w-0 transition-all z-20">
             {activeTab === "search" && (
               <SourceSearch onConnectToArticle={handleConnectSource} />
             )}
 
             {activeTab === "interview" && (
               <InterviewStudio onReturnToArticle={handleReturnFromInterview} />
-            )}
-
-            {/* 작성·검토 메인 화면 (미리보기 및 편집 통합) */}
-            {activeTab === "publish" && (
-              <ArticleWriter
-                article={article}
-                setArticle={setArticle}
-                onOpenSearch={() => setShowSearchModal(true)}
-                onRunFactCheck={handleRunFactCheck}
-                factCheckActive={factCheckActive}
-                factCheckIssues={factCheckIssues}
-                activeFactIndex={activeFactIndex}
-                onApplyFactFix={handleApplyFactFix}
-                onSkipFactFix={handleSkipFactFix}
-              />
             )}
 
             {activeTab === "convert" && (
@@ -153,6 +121,7 @@ export default function App() {
               <ArchiveView />
             )}
           </main>
+        )}
         </div>
       </div>
 
